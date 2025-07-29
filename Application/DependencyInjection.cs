@@ -1,5 +1,7 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +14,25 @@ namespace Application
     public static class DependencyInjection
     {
         public static IServiceCollection AddApplication(this IServiceCollection services) =>
-            services.AddMediatR();
+            services
+            .AddMediatRservices()
+            .AddSFluentValidationservices();
 
-        static IServiceCollection AddMediatR(this IServiceCollection services)
+        static IServiceCollection AddMediatRservices(this IServiceCollection services)
         {
             services.AddMediatR(Assembly.GetExecutingAssembly());
             return services;
 
         }
+        static IServiceCollection AddSFluentValidationservices(this IServiceCollection services)
+        {
+            services
+             .AddFluentValidationAutoValidation()
+             .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            return services;
+        }
+
+
     };
 }

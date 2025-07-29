@@ -19,6 +19,7 @@ namespace Domain.Abstractions.Contracts
         void Delete(TEntity entity);
         Task<bool> DoesEntityExistAsync(Guid id);
         Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression);
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 
     }
 }

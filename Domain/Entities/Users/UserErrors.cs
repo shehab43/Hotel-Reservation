@@ -14,6 +14,10 @@ namespace Domain.Users
             $"The User with Id = {Id} was Not Found"
             );
 
+        //public static Error Failure() => Error.Failure(
+            //"Faild"
+           // );
+
         public static Error Unauthorized() => Error.NotFound(
             "Users.Unauthorized",
             "You are not authorized to perform this action."
@@ -28,6 +32,8 @@ namespace Domain.Users
         public static readonly Error EmailNotUnique = Error.Confilct(
             "Users.EmailNotUnique",
             "The provided email is not unique");
+
+
 
     }
 }

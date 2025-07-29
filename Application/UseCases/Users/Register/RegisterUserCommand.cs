@@ -1,0 +1,18 @@
+﻿using MediatR;
+using SharedKernel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Application.UseCases.Users.Register
+{
+    public sealed record RegisterUserCommand(
+                           string Email, 
+                           string FirstName,
+                           string LastName,
+                           string Password):
+                           IRequest<Result<Guid>>;
+    
+}

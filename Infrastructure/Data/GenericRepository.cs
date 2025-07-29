@@ -76,5 +76,10 @@ namespace Infrastructure.Data
                     propertyEntry.IsModified = true;
             }
         }
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            var count = await _appDbContext.SaveChangesAsync(cancellationToken);
+            return count;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Authentication;
 using Domain.Abstractions.Contracts;
+using Infrastructure.Authentication;
 using Infrastructure.Data;
 using Infrastructure.Database;
 using MediatR;
@@ -37,9 +38,10 @@ namespace Infrastructure
 
         static IServiceCollection AddDataBaseService(this IServiceCollection services , IConfiguration configuration) 
         {
+                                                                     
            var ConnectionString = configuration.GetConnectionString("DefaultConnection");
                services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseSqlServer(configuration.GetConnectionString("ConnectionString")).
+                        options.UseSqlServer(ConnectionString).
                        UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).
                        LogTo(log => Debug.WriteLine(log), LogLevel.Information).
                        EnableSensitiveDataLogging());
@@ -48,15 +50,11 @@ namespace Infrastructure
 
         static IServiceCollection AddAuthenticationInternal(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IPasswordHasher, IPasswordHasher>();
+            services.AddSingleton<IPasswordHasher, PasswordHasher>();
             return services;
         }
 
 
-        static IServiceCollection AddHttpContextAccessor(this IServiceCollection services)
-        {
-            services.AddHttpContextAccessor();
-            return services;
-        }
+ 
     }
 }
