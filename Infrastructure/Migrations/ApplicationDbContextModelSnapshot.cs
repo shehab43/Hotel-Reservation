@@ -28,9 +28,8 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CreatedById")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -62,8 +61,8 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UpdatedById")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");

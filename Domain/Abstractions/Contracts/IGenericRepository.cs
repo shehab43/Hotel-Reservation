@@ -10,7 +10,7 @@ namespace Domain.Abstractions.Contracts
 {
     public interface IGenericRepository<TEntity> where TEntity : BaseEntity
     {
-        Task AddAsync(TEntity entity);
+        Task<TEntity> AddAsync(TEntity entity);
         Task AddRangeAsync(IEnumerable<TEntity> entities);
         void UpdateInclude(TEntity entity, params Expression<Func<TEntity, object>>[] propertyExpressions);
         IQueryable<TEntity> GetAll();

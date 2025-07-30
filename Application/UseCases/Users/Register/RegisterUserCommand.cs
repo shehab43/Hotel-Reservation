@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Domain.Entities.Users;
+using MediatR;
 using SharedKernel;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,6 @@ namespace Application.UseCases.Users.Register
                            string FirstName,
                            string LastName,
                            string Password):
-                           IRequest<Result<Guid>>;
+                           IRequest<Result<User>>;
     
 }

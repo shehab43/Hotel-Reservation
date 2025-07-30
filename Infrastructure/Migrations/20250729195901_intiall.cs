@@ -21,9 +21,9 @@ namespace Infrastructure.Migrations
                     LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedById = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedBy = table.Column<int>(type: "int", nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)

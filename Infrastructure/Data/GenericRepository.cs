@@ -17,16 +17,17 @@ namespace Infrastructure.Data
         private readonly ApplicationDbContext _appDbContext;
         private readonly DbSet<TEntity> _dbSet;
 
-        public GenericRepository(ApplicationDbContext appDbContext, DbSet<TEntity> dbSet)
+        public GenericRepository(ApplicationDbContext appDbContext)
         {
             _appDbContext = appDbContext;
-            _dbSet = dbSet;
+            _dbSet = appDbContext.Set<TEntity>();
         }
 
-        public async Task AddAsync(TEntity entity)
+        public async Task<TEntity> AddAsync(TEntity entity)
         {
 
             await _dbSet.AddAsync(entity);
+            return entity;
         }
 
         public async Task AddRangeAsync(IEnumerable<TEntity> entities)

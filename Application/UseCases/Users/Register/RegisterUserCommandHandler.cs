@@ -8,12 +8,12 @@ using SharedKernel;
 
 namespace Application.UseCases.Users.Register
 {
-    internal sealed class RegisterUserCommandHandler(IGenericRepository<User> genericRepository, IPasswordHasher passwordHasher) : IRequestHandler<RegisterUserCommand,Result<Guid>>
+    internal sealed class RegisterUserCommandHandler(IGenericRepository<User> genericRepository, IPasswordHasher passwordHasher) : IRequestHandler<RegisterUserCommand,Result<User>>
     {
-        public async Task<Result<Guid>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        public async Task<Result<User>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             if (await genericRepository.AnyAsync(u => u.Email == request.Email)) 
-                return Result.Failure<Guid>(UserErrors.EmailNotUnique);
+                return Result.Failure<User>(UserErrors.EmailNotUnique);
 
             var user = new User
             {
@@ -22,11 +22,11 @@ namespace Application.UseCases.Users.Register
                 Email = request.Email,
                 Password = passwordHasher.Hash(request.Password)
             };
-                          await  genericRepository.AddAsync(user);
+             var users =  await genericRepository.AddAsync(user);
              var reslt =  await genericRepository.SaveChangesAsync(cancellationToken);
              if(reslt < 0)
-                return Result.Failure<Guid>(UserErrors.EmailNotUnique);
-            return user.Id;
+                return Result.Failure<User>(UserErrors.EmailNotUnique);
+            return Result.Success(users);
 
         }
     }

@@ -8,7 +8,7 @@ using Web.Api.Infrastructure;
 
 namespace Web.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("Users")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -19,12 +19,13 @@ namespace Web.Api.Controllers
         {
             _mediator = mediator;
         }
-
-        public async Task<Result<Guid>> Register(Request request)
+        [HttpPost]
+        public async Task<IResult> Register([FromBody]Request request)
         {
-            var command =new RegisterUserCommand(request.FirstName, request.LastName, request.Email, request.Password);
+            var command =new RegisterUserCommand(request.Email, request.FirstName, request.LastName, request.Password);
             var result = await _mediator.Send(command);
-            return (Result<Guid>)result.Match(Results.Ok, CustomResults.Problem);
+           
+            return result.IsSuccess ? Results.Ok(result.Value) : result.Problem();
         }
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250727162524_intiall")]
+    [Migration("20250729195901_intiall")]
     partial class intiall
     {
         /// <inheritdoc />
@@ -31,9 +31,8 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CreatedById")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -65,8 +64,8 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UpdatedById")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
