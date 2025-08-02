@@ -8,8 +8,13 @@ using SharedKernel;
 
 namespace Application.UseCases.Users.Register
 {
-    internal sealed class RegisterUserCommandHandler(IGenericRepository<User> genericRepository, IPasswordHasher passwordHasher) : IRequestHandler<RegisterUserCommand,Result<User>>
+    internal sealed class RegisterUserCommandHandler(
+                          IGenericRepository<User> genericRepository, 
+                          IPasswordHasher passwordHasher,
+                          IEmailSender emailSender) :
+                          IRequestHandler<RegisterUserCommand,Result<User>>
     {
+        private readonly IEmailSender _emailSender = emailSender;
         public async Task<Result<User>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             if (await genericRepository.AnyAsync(u => u.Email == request.Email)) 
@@ -25,8 +30,10 @@ namespace Application.UseCases.Users.Register
              var users =  await genericRepository.AddAsync(user);
              var reslt =  await genericRepository.SaveChangesAsync(cancellationToken);
              if(reslt < 0)
-                return Result.Failure<User>(UserErrors.EmailNotUnique);
-            return Result.Success(users);
+
+           return Result.Failure<User>(UserErrors.EmailNotUnique);
+           await _emailSender.SendEmailAsync(request.Email , "Email Verification" , "Click On Link To Confirem Email");
+           return Result.Success(users);
 
         }
     }

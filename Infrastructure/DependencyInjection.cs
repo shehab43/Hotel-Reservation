@@ -3,6 +3,8 @@ using Domain.Abstractions.Contracts;
 using Infrastructure.Authentication;
 using Infrastructure.Data;
 using Infrastructure.Database;
+using Infrastructure.EmailService;
+using Infrastructure.Options;
 using MediatR;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Web.Infrastructure.Options;
 
 namespace Infrastructure
 {
@@ -27,21 +30,22 @@ namespace Infrastructure
                 .AddService()
                 .AddHttpContextAccessor()
                 .AddDataBaseService(Configuration)
-                .AddAuthenticationInternal(Configuration);
+                .AddAuthenticationInternal(Configuration)
+                .AddEmailService(Configuration);
         
 
         static IServiceCollection AddService(this IServiceCollection services)
         {
             services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+            services.ConfigureOptions<EmailSetUp>();
             return services;
         }
 
         static IServiceCollection AddDataBaseService(this IServiceCollection services , IConfiguration configuration) 
         {
-                                                                     
            var ConnectionString = configuration.GetConnectionString("DefaultConnection");
                services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseSqlServer(ConnectionString).
+                        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")).
                        UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).
                        LogTo(log => Debug.WriteLine(log), LogLevel.Information).
                        EnableSensitiveDataLogging());
@@ -54,6 +58,11 @@ namespace Infrastructure
             return services;
         }
 
+        static IServiceCollection AddEmailService(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddScoped<IEmailSender, EmailSender>();
+            return services;
+        }
 
  
     }
