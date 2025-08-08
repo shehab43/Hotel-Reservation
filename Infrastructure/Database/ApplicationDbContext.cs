@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.EmaiVerification;
 using Domain.Entities.Users;
 using Infrastructure.Excetension;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +15,7 @@ namespace Infrastructure.Database
     {
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         public DbSet<User> Users { get; set; }
-        
+        public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
      
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,7 +33,7 @@ namespace Infrastructure.Database
                 {
                     // For new entities, if no current user, use a default value or skip
                     //?.Entity.CreatedById = currentUserId! ; // Use Guid.Empty as default
-                    entityentry.Entity.CreatedById = Guid.NewGuid()! ; // Use Guid.Empty as default
+                    entityentry.Entity.CreatedById = currentUserId! ?? string.Empty ; 
                     entityentry.Entity.CreatedOn = DateTime.UtcNow;
                 }
                 else if (entityentry.State == EntityState.Modified)

@@ -4,6 +4,7 @@ using Infrastructure.Authentication;
 using Infrastructure.Data;
 using Infrastructure.Database;
 using Infrastructure.EmailService;
+using Infrastructure.Helpers.EmailVerificationLink;
 using Infrastructure.Options;
 using MediatR;
 using Microsoft.AspNetCore.Connections;
@@ -37,6 +38,8 @@ namespace Infrastructure
         static IServiceCollection AddService(this IServiceCollection services)
         {
             services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+            services.AddScoped<IEmailVerfication, EmailVerfication>();
+            services.AddScoped<IEmailVerificationLinkFactory, EmailVerificationLinkFactory>();
             services.ConfigureOptions<EmailSetUp>();
             return services;
         }
@@ -45,11 +48,11 @@ namespace Infrastructure
         {
            var ConnectionString = configuration.GetConnectionString("DefaultConnection");
                services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")).
-                       UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).
-                       LogTo(log => Debug.WriteLine(log), LogLevel.Information).
-                       EnableSensitiveDataLogging());
-           return services;
+                        options.UseSqlServer(ConnectionString).
+                        UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).
+                        LogTo(log => Debug.WriteLine(log), LogLevel.Information).
+                        EnableSensitiveDataLogging());
+               return services;
         }
 
         static IServiceCollection AddAuthenticationInternal(this IServiceCollection services, IConfiguration configuration)

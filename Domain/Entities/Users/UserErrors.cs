@@ -14,9 +14,10 @@ namespace Domain.Users
             $"The User with Id = {Id} was Not Found"
             );
 
-        //public static Error Failure() => Error.Failure(
-            //"Faild"
-           // );
+        public static  Error FaildToUpdateEmailVerification = Error.Failure(
+            "Users.FaildToUpdate",
+            "Faild Email Verification "
+            );
 
         public static Error Unauthorized() => Error.NotFound(
             "Users.Unauthorized",

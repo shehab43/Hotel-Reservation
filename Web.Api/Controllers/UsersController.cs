@@ -1,4 +1,5 @@
-﻿using Application.UseCases.Users.Register;
+﻿using Application.UseCases.Users.EmailVerification.commands.GetById;
+using Application.UseCases.Users.Register;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,14 @@ namespace Web.Api.Controllers
             var result = await _mediator.Send(command);
            
             return result.IsSuccess ? Results.Ok(result.Value) : result.Problem();
+        }
+        [HttpGet("VerifyEmail")]
+        public async Task<IResult> VerifyEmail(Guid Token)
+        {
+            var command = new EmailVerificationCommand(Token);
+            var result = await _mediator.Send(command);
+          return  result.IsSuccess ? Results.Ok(result.Value) : result.Problem();
+
         }
     }
 }

@@ -1,8 +1,10 @@
-﻿using Domain.Entities.Users;
+﻿using Domain.Dtos;
+using Domain.Entities.EmaiVerification;
 using SharedKernel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +12,10 @@ namespace Domain.Abstractions.Contracts
 {
     public interface IEmailVerfication
     {
-        Task<Result> Get (Guid token,CancellationToken cancellationToken = default);
+        public Task<EmailVerificationToken?> Get(Guid id);
+        public Task add(EmailVerificationToken emailVerificationToken, CancellationToken cancellationToken = default);
+        public Task Delete(Guid Id);
+        public Task<int> SaveChanges();
+
     }
 }

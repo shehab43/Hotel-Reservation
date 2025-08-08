@@ -11,7 +11,7 @@ namespace Domain.Entities
         public Guid Id { get; set; } 
 
         public DateTime CreatedOn { get; set; } = DateTime.Now;
-        public Guid CreatedById { get; set; } = Guid.NewGuid();
+        public string CreatedById { get; set; } = string.Empty;
         public DateTime? UpdatedOn { get; set; }
         public string? UpdatedById { get; set; }
         public int? DeletedBy { get; set; }

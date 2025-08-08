@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddRouting();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services
     .AddPresentation()

@@ -13,7 +13,9 @@ namespace Domain.Entities.Users
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-       // public bool IsAuthenticated { get; set; } = false;
+        public bool EmailVerified { get; set; } = false;
+
+        //public ICollection<EmailVerificationToken> emailVerificationTokens { get; set; } 
        // public byte[]? ProfileImage { get; set; }
        // public Client Client { get; set; } = null!;
 

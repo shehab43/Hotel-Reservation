@@ -42,7 +42,7 @@ namespace Infrastructure.Data
         {
             entity.IsDeleted = true;
             entity.DeletedAt = DateTime.UtcNow;
-            UpdateInclude(entity, p => p.IsDeleted, p => p.DeletedAt);
+            UpdateInclude(entity, p => p.IsDeleted, p => p.DeletedAt!);
         }
 
         public async Task<bool> DoesEntityExistAsync(Guid id) => await _dbSet.AnyAsync(e => e.Id == id);

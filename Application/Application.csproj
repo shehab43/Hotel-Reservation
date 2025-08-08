@@ -19,4 +19,9 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UseCases\EmailVerification\Query\" />
+    <Folder Include="UseCases\Users\Query\" />
+  </ItemGroup>
+
 </Project>

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.UseCases.Users.Register
+namespace Application.UseCases.Users.Command.Register
 {
     internal sealed class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
     {

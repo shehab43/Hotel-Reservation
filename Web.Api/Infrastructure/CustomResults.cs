@@ -1,4 +1,5 @@
-﻿using SharedKernel;
+﻿using Microsoft.AspNetCore.Http;
+using SharedKernel;
 
 namespace Web.Api.Infrastructure;
 
@@ -17,6 +18,22 @@ public static class CustomResults
             type: GetType(result.Error.Type),
             statusCode: GetStatusCode(result.Error.Type),
             extensions: GetErrors(result));
+    }
+
+    public static IResult Problem<T>(this Result<T> result)
+    {
+        if (result.IsSuccess)
+        {
+            throw new InvalidOperationException();
+        }
+
+        return Results.Problem(
+            title: GetTitle(result.Error),
+            detail: GetDetail(result.Error),
+            type: GetType(result.Error.Type),
+            statusCode: GetStatusCode(result.Error.Type),
+            extensions: GetErrors(result));
+    }
 
         static string GetTitle(Error error) =>
             error.Type switch
@@ -69,5 +86,18 @@ public static class CustomResults
                 { "errors", validationError.Errors }
             };
         }
-    }
+
+        static Dictionary<string, object?>? GetErrors<T>(Result<T> result)
+        {
+            if (result.Error is not ValidationError validationError)
+            {
+                return null;
+            }
+
+            return new Dictionary<string, object?>
+            {
+                { "errors", validationError.Errors }
+            };
+        }
+    
 }
