@@ -8,7 +8,7 @@ namespace Domain.Entities
 {
     public class BaseEntity
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } 
 
         public DateTime CreatedOn { get; set; } = DateTime.Now;
         public string CreatedById { get; set; } = string.Empty;

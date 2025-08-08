@@ -12,6 +12,12 @@ namespace Domain.Entities.Users
         public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        public string PasswordHash { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public bool EmailVerified { get; set; } = false;
+
+        //public ICollection<EmailVerificationToken> emailVerificationTokens { get; set; } 
+       // public byte[]? ProfileImage { get; set; }
+       // public Client Client { get; set; } = null!;
+
     }
 }

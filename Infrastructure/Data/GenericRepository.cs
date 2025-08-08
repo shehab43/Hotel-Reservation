@@ -17,16 +17,17 @@ namespace Infrastructure.Data
         private readonly ApplicationDbContext _appDbContext;
         private readonly DbSet<TEntity> _dbSet;
 
-        public GenericRepository(ApplicationDbContext appDbContext, DbSet<TEntity> dbSet)
+        public GenericRepository(ApplicationDbContext appDbContext)
         {
             _appDbContext = appDbContext;
-            _dbSet = dbSet;
+            _dbSet = appDbContext.Set<TEntity>();
         }
 
-        public async Task AddAsync(TEntity entity)
+        public async Task<TEntity> AddAsync(TEntity entity)
         {
 
             await _dbSet.AddAsync(entity);
+            return entity;
         }
 
         public async Task AddRangeAsync(IEnumerable<TEntity> entities)
@@ -41,7 +42,7 @@ namespace Infrastructure.Data
         {
             entity.IsDeleted = true;
             entity.DeletedAt = DateTime.UtcNow;
-            UpdateInclude(entity, p => p.IsDeleted, p => p.DeletedAt);
+            UpdateInclude(entity, p => p.IsDeleted, p => p.DeletedAt!);
         }
 
         public async Task<bool> DoesEntityExistAsync(Guid id) => await _dbSet.AnyAsync(e => e.Id == id);
@@ -75,6 +76,11 @@ namespace Infrastructure.Data
                 else
                     propertyEntry.IsModified = true;
             }
+        }
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            var count = await _appDbContext.SaveChangesAsync(cancellationToken);
+            return count;
         }
     }
 }

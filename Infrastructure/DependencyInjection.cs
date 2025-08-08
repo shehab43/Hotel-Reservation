@@ -1,7 +1,11 @@
 ﻿using Application.Abstractions.Authentication;
 using Domain.Abstractions.Contracts;
+using Infrastructure.Authentication;
 using Infrastructure.Data;
 using Infrastructure.Database;
+using Infrastructure.EmailService;
+using Infrastructure.Helpers.EmailVerificationLink;
+using Infrastructure.Options;
 using MediatR;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +19,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Web.Infrastructure.Options;
 
 namespace Infrastructure
 {
@@ -26,12 +31,16 @@ namespace Infrastructure
                 .AddService()
                 .AddHttpContextAccessor()
                 .AddDataBaseService(Configuration)
-                .AddAuthenticationInternal(Configuration);
+                .AddAuthenticationInternal(Configuration)
+                .AddEmailService(Configuration);
         
 
         static IServiceCollection AddService(this IServiceCollection services)
         {
             services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+            services.AddScoped<IEmailVerfication, EmailVerfication>();
+            services.AddScoped<IEmailVerificationLinkFactory, EmailVerificationLinkFactory>();
+            services.ConfigureOptions<EmailSetUp>();
             return services;
         }
 
@@ -39,24 +48,25 @@ namespace Infrastructure
         {
            var ConnectionString = configuration.GetConnectionString("DefaultConnection");
                services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseSqlServer(configuration.GetConnectionString("ConnectionString")).
-                       UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).
-                       LogTo(log => Debug.WriteLine(log), LogLevel.Information).
-                       EnableSensitiveDataLogging());
-           return services;
+                        options.UseSqlServer(ConnectionString).
+                        UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).
+                        LogTo(log => Debug.WriteLine(log), LogLevel.Information).
+                        EnableSensitiveDataLogging());
+               return services;
         }
 
         static IServiceCollection AddAuthenticationInternal(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IPasswordHasher, IPasswordHasher>();
+            services.AddSingleton<IPasswordHasher, PasswordHasher>();
             return services;
         }
 
-
-        static IServiceCollection AddHttpContextAccessor(this IServiceCollection services)
+        static IServiceCollection AddEmailService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddHttpContextAccessor();
+            services.AddScoped<IEmailSender, EmailSender>();
             return services;
         }
+
+ 
     }
 }

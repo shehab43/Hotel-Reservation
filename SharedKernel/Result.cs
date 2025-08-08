@@ -19,7 +19,8 @@ namespace SharedKernel
                 throw new ArgumentException("Invalid error",nameof(error));
             }
 
-
+            IsSuccess = isSuccess;
+            Error = error;
         } 
 
         public bool IsSuccess { get; }

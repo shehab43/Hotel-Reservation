@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.EmaiVerification;
 using Domain.Entities.Users;
 using Infrastructure.Excetension;
 using Microsoft.AspNetCore.Http;
@@ -14,10 +15,11 @@ namespace Infrastructure.Database
     {
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         public DbSet<User> Users { get; set; }
-        
+        public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
      
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
             base.OnModelCreating(modelBuilder);
         }
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -29,13 +31,19 @@ namespace Infrastructure.Database
             {
                 if (entityentry.State == EntityState.Added)
                 {
-                    entityentry.Entity.CreatedById = currentUserId!;
+                    // For new entities, if no current user, use a default value or skip
+                    //?.Entity.CreatedById = currentUserId! ; // Use Guid.Empty as default
+                    entityentry.Entity.CreatedById = currentUserId! ?? string.Empty ; 
                     entityentry.Entity.CreatedOn = DateTime.UtcNow;
                 }
-                else
+                else if (entityentry.State == EntityState.Modified)
                 {
-                    entityentry.Entity.UpdatedById = currentUserId;
-                    entityentry.Entity.UpdatedOn = DateTime.UtcNow;
+                    // Only update if there's a current user
+                    if (currentUserId != null)
+                    {
+                        entityentry.Entity.UpdatedById = currentUserId;
+                        entityentry.Entity.UpdatedOn = DateTime.UtcNow;
+                    }
                 }
             }
             return base.SaveChangesAsync(cancellationToken);
