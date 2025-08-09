@@ -12,7 +12,7 @@ namespace Domain.Abstractions.Contracts
     {
         Task<TEntity> AddAsync(TEntity entity);
         Task AddRangeAsync(IEnumerable<TEntity> entities);
-        void UpdateInclude(TEntity entity, params Expression<Func<TEntity, object>>[] propertyExpressions);
+        void UpdateInclude(TEntity entity, params string[] modifiedProperties);
         IQueryable<TEntity> GetAll();
         IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> expression);
         Task<TEntity?> GetByIdAsync(Guid id);

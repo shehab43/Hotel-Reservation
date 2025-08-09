@@ -36,13 +36,13 @@ namespace Infrastructure.Data
             await _dbSet.AddRangeAsync(entities);
         }
 
-    
+
 
         public void Delete(TEntity entity)
         {
             entity.IsDeleted = true;
             entity.DeletedAt = DateTime.UtcNow;
-            UpdateInclude(entity, p => p.IsDeleted, p => p.DeletedAt!);
+            //UpdateInclude(entity,);
         }
 
         public async Task<bool> DoesEntityExistAsync(Guid id) => await _dbSet.AnyAsync(e => e.Id == id);
@@ -56,27 +56,31 @@ namespace Infrastructure.Data
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> expression) => GetAll().Where(expression);
         public async Task<TEntity?> GetByIdAsync(Guid id) => await GetAll().FirstOrDefaultAsync(x => x.Id == id);
 
-        public void UpdateInclude(TEntity entity, params Expression<Func<TEntity, object>>[] propertyExpressions)
+        public void UpdateInclude(TEntity entity, params string[] modifiedProperties)
         {
-            var propertiesToExclude = new HashSet<string>(propertyExpressions.Select(e => ((MemberExpression)e.Body).Member.Name));
+            if (!_dbSet.Any(x => x.Id == entity.Id && !x.IsDeleted))
+                return;
 
-            var local = _dbSet.Local.FirstOrDefault(i => i.Id == entity.Id);
-            EntityEntry<TEntity> entityEntry = null;
+            var local = _dbSet.Local.FirstOrDefault(x => x.Id == entity.Id);
+            EntityEntry entityEntry;
+
             if (local is null)
                 entityEntry = _appDbContext.Entry(entity);
             else
-                entityEntry = _appDbContext.ChangeTracker.Entries<TEntity>().First(i => i.Entity.Id == entity.Id);
+                entityEntry = _appDbContext.ChangeTracker.Entries<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id)!;
 
-            foreach (var propertyEntry in entityEntry.Properties)
+
+            foreach (var prop in entityEntry.Properties)
             {
-                var propertyName = propertyEntry.Metadata.Name;
-
-                if (propertiesToExclude.Contains(propertyName))
-                    propertyEntry.IsModified = false;
-                else
-                    propertyEntry.IsModified = true;
+                if (modifiedProperties.Contains(prop.Metadata.Name))
+                {
+                    prop.CurrentValue = entity.GetType().GetProperty(prop.Metadata.Name)?.GetValue(entity);
+                    prop.IsModified = true;
+                }
             }
+
         }
+
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
             var count = await _appDbContext.SaveChangesAsync(cancellationToken);

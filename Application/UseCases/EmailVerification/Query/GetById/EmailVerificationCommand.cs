@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.UseCases.EmailVerification.commands.GetById
+namespace Application.UseCases.EmailVerification.Query.GetById
 {
     public sealed record EmailVerificationCommand(Guid Id): IRequest<Result<bool>>;
    

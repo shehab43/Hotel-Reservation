@@ -9,7 +9,7 @@ using SharedKernel;
 
 namespace Application.UseCases.Users.Command.Register
 {
-    internal sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand,Result<User>>
+    internal sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand,Result<RegisterViewModel>>
     {
         private readonly IGenericRepository<User> _genericRepository;
         private readonly IPasswordHasher _passwordHasher;
@@ -30,10 +30,10 @@ namespace Application.UseCases.Users.Command.Register
             _emailVerfication = emailVerfication;
             _emailVerificationLink = emailVerificationLink;
         }
-        public async Task<Result<User>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        public async Task<Result<RegisterViewModel>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             if (await _genericRepository.AnyAsync(u => u.Email == request.Email)) 
-                return Result.Failure<User>(UserErrors.EmailNotUnique);
+                return Result.Failure<RegisterViewModel>(UserErrors.EmailNotUnique);
 
             var user = new User
             {
@@ -45,7 +45,7 @@ namespace Application.UseCases.Users.Command.Register
              var users =  await _genericRepository.AddAsync(user);
              var reslt =  await _genericRepository.SaveChangesAsync(cancellationToken);
              if(reslt < 0)
-                 return Result.Failure<User>(UserErrors.EmailNotUnique);
+                 return Result.Failure<RegisterViewModel>(UserErrors.EmailNotUnique);
             var Token = new EmailVerificationToken
             { 
                 Id =  Guid.NewGuid(),
@@ -53,13 +53,19 @@ namespace Application.UseCases.Users.Command.Register
                 CreateOnUtc = DateTime.UtcNow,
                 ExpirationDate = DateTime.UtcNow.AddDays(1)     
             };
+            var userViewModel = new RegisterViewModel
+            {
+                Email= user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
             await  _emailVerfication.add(Token);
             await  _emailVerfication.SaveChanges();
             var Verification = _emailVerificationLink.Create(Token.Id);
             await _emailSender.SendEmailAsync(request.Email , 
                                              "Email Verification" ,
                                              $"Click On Link To Confirem Email<a href='{Verification}'>click here </a>");
-           return Result.Success(users);
+           return Result.Success<RegisterViewModel>(userViewModel);
 
         }
     }
