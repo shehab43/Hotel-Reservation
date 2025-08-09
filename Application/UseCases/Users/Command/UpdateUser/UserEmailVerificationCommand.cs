@@ -9,6 +9,6 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Users.Command.UpdateUser
 {
-    public sealed record UserEmailVerificationCommand(Guid  UserId):IRequest<Result<bool>>;
+    public sealed record UserEmailVerificationCommand(Guid  UserId):IRequest<Result>;
   
 }

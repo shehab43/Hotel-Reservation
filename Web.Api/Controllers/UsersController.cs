@@ -1,5 +1,6 @@
-﻿using Application.UseCases.Users.EmailVerification.commands.GetById;
-using Application.UseCases.Users.Register;
+﻿using Application.UseCases.EmailVerification.Query.GetById;
+using Application.UseCases.Users.Command.Register;
+
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +34,8 @@ namespace Web.Api.Controllers
         {
             var command = new EmailVerificationCommand(Token);
             var result = await _mediator.Send(command);
-          return  result.IsSuccess ? Results.Ok(result.Value) : result.Problem();
+          return  result.IsSuccess ?
+                         Results.Ok(result.Value) : result.Problem();
 
         }
     }

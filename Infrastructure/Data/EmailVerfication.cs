@@ -26,6 +26,7 @@ namespace Infrastructure.Data
                                  .Where(e => e.Id == id)
                                  .Select(e => new EmailVerificationToken
                                  {
+                                     UserId = e.UserId,
                                      ExpirationDate = e.ExpirationDate,
                                      User = e.User 
                                    })

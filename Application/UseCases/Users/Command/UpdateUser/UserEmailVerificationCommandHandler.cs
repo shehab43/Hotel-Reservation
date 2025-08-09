@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Users.Command.UpdateUser
 {
-    public class UserEmailVerificationCommandHandler : IRequestHandler<UserEmailVerificationCommand, Result<bool>>
+    public class UserEmailVerificationCommandHandler : IRequestHandler<UserEmailVerificationCommand, Result>
     {
         private readonly IGenericRepository<User> _genericRepository;
 
@@ -21,7 +21,7 @@ namespace Application.UseCases.Users.Command.UpdateUser
          _genericRepository = genericRepository;
         }
 
-        public  async Task<Result<bool>> Handle(UserEmailVerificationCommand request, CancellationToken cancellationToken)
+        public  async Task<Result> Handle(UserEmailVerificationCommand request, CancellationToken cancellationToken)
         {
             var emailVerification = new User
             {
@@ -29,12 +29,12 @@ namespace Application.UseCases.Users.Command.UpdateUser
                 EmailVerified = true
             };
 
-            _genericRepository.UpdateInclude(emailVerification , e => e.EmailVerified);
+            _genericRepository.UpdateInclude(emailVerification , nameof(User.EmailVerified));
             var result =  await _genericRepository.SaveChangesAsync(cancellationToken) > 0;
 
             return result ?
-                  Result.Success<bool>(true) :
-                  Result.Failure<bool>(UserErrors.FaildToUpdateEmailVerification);
+                  Result.Success(true) :
+                  Result.Failure(UserErrors.FaildToUpdateEmailVerification);
         }
     }
 }

@@ -14,6 +14,6 @@ namespace Application.UseCases.Users.Command.Register
                            string FirstName,
                            string LastName,
                            string Password):
-                           IRequest<Result<User>>;
+                           IRequest<Result<RegisterViewModel>>;
     
 }
