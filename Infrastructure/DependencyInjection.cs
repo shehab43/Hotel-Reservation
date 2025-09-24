@@ -46,9 +46,9 @@ namespace Infrastructure
 
         static IServiceCollection AddDataBaseService(this IServiceCollection services , IConfiguration configuration) 
         {
-           var ConnectionString = configuration.GetConnectionString("DefaultConnection");
+           var connectionString = configuration.GetConnectionString("DefaultConnection");
                services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseSqlServer(ConnectionString).
+                        options.UseSqlServer(connectionString).
                         UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).
                         LogTo(log => Debug.WriteLine(log), LogLevel.Information).
                         EnableSensitiveDataLogging());

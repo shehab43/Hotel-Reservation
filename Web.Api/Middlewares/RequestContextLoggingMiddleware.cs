@@ -6,9 +6,18 @@ using System.Security.Claims;
 
 namespace Web.Api.Middlewares
 {
-    public class RequestContextLoggingMiddleware(RequestDelegate next, ILogger<RequestContextLoggingMiddleware> logger)
+    public class RequestContextLoggingMiddleware
     {
         private const string CorrelationIdHeaderName = "correlationId";
+        private readonly RequestDelegate _next;
+        private readonly ILogger<RequestContextLoggingMiddleware> _logger;
+
+        public RequestContextLoggingMiddleware(RequestDelegate next, ILogger<RequestContextLoggingMiddleware> logger)
+        {
+            _next = next;
+            _logger = logger;
+        }
+
         public Task InvokeAsync(HttpContext context)
         {
             var data = new Dictionary<string, object>
@@ -23,9 +32,9 @@ namespace Web.Api.Middlewares
 
                 data["UserId"] = userId;
             }
-            using (logger.BeginScope(data))
+            using (_logger.BeginScope(data))
             {
-                return next.Invoke(context);
+                return _next.Invoke(context);
             };
            
         }
