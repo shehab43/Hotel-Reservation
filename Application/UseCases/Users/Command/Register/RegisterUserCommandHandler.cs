@@ -1,9 +1,12 @@
-﻿using Application.Abstractions.Authentication;
+using Application.Abstractions.Authentication;
+using Azure;
+using Azure.Core;
 using Domain.Abstractions.Contracts;
 using Domain.Entities.EmaiVerification;
 using Domain.Entities.Users;
 using Domain.Users;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using SharedKernel;
 
 
@@ -16,24 +19,31 @@ namespace Application.UseCases.Users.Command.Register
         private readonly IEmailSender _emailSender;
         private readonly IEmailVerfication _emailVerfication;
         private readonly IEmailVerificationLinkFactory _emailVerificationLink;
+        private readonly ILogger<RegisterUserCommandHandler> _logger;
 
         public RegisterUserCommandHandler(
             IGenericRepository<User> genericRepository,
             IPasswordHasher passwordHasher,
             IEmailSender emailSender,
             IEmailVerfication emailVerfication,
-            IEmailVerificationLinkFactory emailVerificationLink)
+            IEmailVerificationLinkFactory emailVerificationLink,
+            ILogger<RegisterUserCommandHandler> logger
+            )
         {
             _genericRepository = genericRepository;
             _passwordHasher = passwordHasher;
             _emailSender = emailSender;
             _emailVerfication = emailVerfication;
             _emailVerificationLink = emailVerificationLink;
+            _logger = logger;
         }
         public async Task<Result<RegisterViewModel>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
+
             if (await _genericRepository.AnyAsync(u => u.Email == request.Email)) 
+            {
                 return Result.Failure<RegisterViewModel>(UserErrors.EmailNotUnique);
+            }
 
             var user = new User
             {
@@ -45,7 +55,9 @@ namespace Application.UseCases.Users.Command.Register
              var users =  await _genericRepository.AddAsync(user);
              var reslt =  await _genericRepository.SaveChangesAsync(cancellationToken);
              if(reslt < 0)
+             {
                  return Result.Failure<RegisterViewModel>(UserErrors.EmailNotUnique);
+             }
             var Token = new EmailVerificationToken
             { 
                 Id =  Guid.NewGuid(),
@@ -62,10 +74,13 @@ namespace Application.UseCases.Users.Command.Register
             await  _emailVerfication.add(Token);
             await  _emailVerfication.SaveChanges();
             var Verification = _emailVerificationLink.Create(Token.Id);
+            
             await _emailSender.SendEmailAsync(request.Email , 
                                              "Email Verification" ,
                                              $"Click On Link To Confirem Email<a href='{Verification}'>click here </a>");
-           return Result.Success<RegisterViewModel>(userViewModel);
+            
+            _logger.LogInformation("User registration completed successfully for email: {Email}", request.Email);
+            return Result.Success<RegisterViewModel>(userViewModel);
 
         }
     }

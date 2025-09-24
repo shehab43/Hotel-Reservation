@@ -1,4 +1,5 @@
 ﻿using Web.Api.Infrastructure;
+using Web.Api.Middlewares;
 
 namespace Web.Api
 {

@@ -1,7 +1,10 @@
 using Application;
 using Infrastructure;
 using Scalar.AspNetCore;
+using Serilog;
 using Web.Api;
+using Web.Api.Extensions;
+using Web.Api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +16,7 @@ builder.Services.AddRouting();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services
     .AddPresentation()
-    .AddApplication()
+    .AddApplication(builder.Configuration,builder.Host)
     .AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
@@ -32,6 +35,7 @@ if (app.Environment.IsDevelopment())
     });
 
 }
+app.UseRequestContextLogging();
 
 app.UseHttpsRedirection();
 
@@ -39,6 +43,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthorization();
 app.UseExceptionHandler();
+
 app.MapControllers();
 
 app.Run();
